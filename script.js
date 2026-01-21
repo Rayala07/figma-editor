@@ -9,6 +9,9 @@ let isDragging = false;
 let dragOffsetX = 0;
 let dragOffsetY = 0;
 
+let isResizing = false;
+let resizeDirection = "";
+
 // Function to create the rectangle data.
 const createRectangleData = () => {
   const data = {
@@ -57,6 +60,53 @@ const renderRectangle = (element) => {
     dragOffsetX = e.clientX - element.x;
     dragOffsetY = e.clientY - element.y;
   });
+
+  // Resize handles.
+  const brHandle = document.createElement("div");
+  brHandle.classList.add("resize-handle", "br");
+  rectangle.appendChild(brHandle);
+  const blHandle = document.createElement("div");
+  blHandle.classList.add("resize-handle", "bl");
+  rectangle.appendChild(blHandle);
+  const tlHandle = document.createElement("div");
+  tlHandle.classList.add("resize-handle", "tl");
+  rectangle.appendChild(tlHandle);
+  const trHandle = document.createElement("div");
+  trHandle.classList.add("resize-handle", "tr");
+  rectangle.appendChild(trHandle);
+
+  // Event to resize rectangle : br
+  brHandle.addEventListener("mousedown", (e) => {
+    e.stopPropagation();
+    selectedId = element.id;
+    isResizing = true;
+    resizeDirection = "br";
+    console.log(resizeDirection);
+  });
+
+  // Event to resize rectangle : bl
+  blHandle.addEventListener("mousedown", (e) => {
+    e.stopPropagation();
+    isResizing = true;
+    resizeDirection = "bl";
+    console.log(resizeDirection);
+  });
+
+  // Event to resize rectangle : tl
+  tlHandle.addEventListener("mousedown", (e) => {
+    e.stopPropagation();
+    isResizing = true;
+    resizeDirection = "tl";
+    console.log(resizeDirection);
+  });
+
+  // Event to resize rectangle : tr
+  trHandle.addEventListener("mousedown", (e) => {
+    e.stopPropagation();
+    isResizing = true;
+    resizeDirection = "tr";
+    console.log(resizeDirection);
+  });
 };
 
 // Function to select rectangle.
@@ -104,7 +154,16 @@ document.addEventListener("mousemove", (e) => {
 // Event to stop dragging rectangle.
 document.addEventListener("mouseup", () => {
   isDragging = false;
+  isResizing = false;
 });
+
+// Event to resize rectangle.
+document.addEventListener('mousemove', () => {
+    if (!isResizing || !selectedId) return;
+    if(resizeDirection === 'br') {
+        console.log('resize br');
+    }
+})
 
 // Flow of calling functions ->
 const rectangleData = createRectangleData();
