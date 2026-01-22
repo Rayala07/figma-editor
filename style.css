@@ -27,7 +27,7 @@ body {
 .resize-handle {
     width: 5px;
     height: 5px;
-    background: blue;
+    background: rgb(196, 196, 255);
     position: absolute;
 }
 

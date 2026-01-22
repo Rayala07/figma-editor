@@ -10,6 +10,8 @@ let dragOffsetX = 0;
 let dragOffsetY = 0;
 
 let isResizing = false;
+let resizeOffsetX = 0;
+let resizeOffsetY = 0;
 let resizeDirection = "";
 
 // Function to create the rectangle data.
@@ -81,31 +83,32 @@ const renderRectangle = (element) => {
     selectedId = element.id;
     isResizing = true;
     resizeDirection = "br";
-    console.log(resizeDirection);
+    resizeOffsetX = e.clientX - element.x;
+    resizeOffsetY = e.clientY - element.y;
   });
 
   // Event to resize rectangle : bl
   blHandle.addEventListener("mousedown", (e) => {
     e.stopPropagation();
+    selectedId = element.id;
     isResizing = true;
     resizeDirection = "bl";
-    console.log(resizeDirection);
   });
 
   // Event to resize rectangle : tl
   tlHandle.addEventListener("mousedown", (e) => {
     e.stopPropagation();
+    selectedId = element.id;
     isResizing = true;
     resizeDirection = "tl";
-    console.log(resizeDirection);
   });
 
   // Event to resize rectangle : tr
   trHandle.addEventListener("mousedown", (e) => {
     e.stopPropagation();
+    selectedId = element.id;
     isResizing = true;
     resizeDirection = "tr";
-    console.log(resizeDirection);
   });
 };
 
@@ -158,12 +161,28 @@ document.addEventListener("mouseup", () => {
 });
 
 // Event to resize rectangle.
-document.addEventListener('mousemove', () => {
-    if (!isResizing || !selectedId) return;
-    if(resizeDirection === 'br') {
-        console.log('resize br');
-    }
-})
+document.addEventListener("mousemove", (e) => {
+  if (!isResizing || !selectedId) return;
+  if (resizeDirection === "br") {
+    const element = elements.find((element) => element.id === selectedId);
+    const rectDiv = canvas.querySelector(`[data-id="${selectedId}"]`);
+
+    let newWidth = e.clientX - element.x;
+    let newHeight = e.clientY - element.y;
+
+    element.width = newWidth;
+    element.height = newHeight;
+
+    rectDiv.style.width = element.width + "px";
+    rectDiv.style.height = element.height + "px";
+  } else if (resizeDirection === "bl") {
+    console.log("resize bl");
+  } else if (resizeDirection === "tl") {
+    console.log("resize tl");
+  } else {
+    console.log("resize tr");
+  }
+});
 
 // Flow of calling functions ->
 const rectangleData = createRectangleData();
