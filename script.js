@@ -41,6 +41,12 @@ const renderLayers = () => {
   });
 };
 
+// Properties Panel vars.
+const propX = document.querySelector("#propX");
+const propY = document.querySelector("#propY");
+const propW = document.querySelector("#propW");
+const propH = document.querySelector("#propH");
+
 // Add rectangle button.
 const addRectBtn = document.querySelector("#add-rectangle");
 
@@ -88,12 +94,13 @@ const renderRectangle = (element) => {
 
   canvas.appendChild(rectangle);
 
-  // Event listener to select rectangle.
+  // Event to select rectangle.
   rectangle.addEventListener("click", (e) => {
     e.stopPropagation();
     selectedId = element.id;
     updateSelectedUI();
     renderLayers();
+    updatePropertiesPanel();
   });
 
   // Event to deselect rectangle.
@@ -101,6 +108,7 @@ const renderRectangle = (element) => {
     selectedId = null;
     updateSelectedUI();
     renderLayers();
+    updatePropertiesPanel();
   });
 
   // Event listener to drag rectangle around the canvas.
@@ -387,6 +395,7 @@ document.addEventListener("keydown", (e) => {
     // remove from UI
     rectDiv.remove();
     renderLayers();
+    updatePropertiesPanel();
 
     // clear selection
     selectedId = null;
@@ -397,3 +406,89 @@ document.addEventListener("keydown", (e) => {
   rectDiv.style.left = element.x + "px";
   rectDiv.style.top = element.y + "px";
 });
+
+// Properties Panel function.
+const updatePropertiesPanel = () => {
+  if (!selectedId) {
+    propX.value = "";
+    propY.value = "";
+    propW.value = "";
+    propH.value = "";
+    return;
+  }
+
+  const element = elements.find((element) => element.id === selectedId);
+
+  propX.value = Math.round(element.x);
+  propY.value = Math.round(element.y);
+  propW.value = Math.round(element.width);
+  propH.value = Math.round(element.height);
+};
+
+// Render Changes according to input.
+const applyPropertyChanges = () => {
+  if (!selectedId) return;
+
+  const element = elements.find((element) => element.id === selectedId);
+  const rectDiv = canvas.querySelector(`[data-id="${selectedId}"]`);
+
+  const xVal = propX.value;
+  const yVal = propY.value;
+  const wVal = propW.value;
+  const hVal = propH.value;
+
+  const isValidNum = (val) => {
+    return val !== "" && !isNaN(val);
+  };
+
+  propX.classList.remove("input-error");
+  propY.classList.remove("input-error");
+  propW.classList.remove("input-error");
+  propH.classList.remove("input-error");
+
+  if (!isValidNum(xVal)) propX.classList.add("input-error");
+  if (!isValidNum(yVal)) propY.classList.add("input-error");
+  if (!isValidNum(wVal)) propW.classList.add("input-error");
+  if (!isValidNum(hVal)) propH.classList.add("input-error");
+
+  if (
+    !isValidNum(xVal) ||
+    !isValidNum(yVal) ||
+    !isValidNum(wVal) ||
+    !isValidNum(hVal)
+  ) {
+    return;
+  }
+
+  const newX = Number(xVal);
+  const newY = Number(yVal);
+  const newW = Number(wVal);
+  const newH = Number(hVal);
+
+  const MIN_SIZE = 40;
+
+  const maxX = canvas.clientWidth - element.width;
+  const maxY = canvas.clientHeight - element.height;
+
+  const maxW = canvas.clientWidth - element.x;
+  const maxH = canvas.clientHeight - element.y;
+
+  // Position
+  element.x = Math.max(0, Math.min(newX, maxX));
+  element.y = Math.max(0, Math.min(newY, maxY));
+
+  // Size
+  element.width = Math.max(MIN_SIZE, Math.min(newW, maxW));
+  element.height = Math.max(MIN_SIZE, Math.min(newH, maxH));
+
+  rectDiv.style.left = element.x + "px";
+  rectDiv.style.top = element.y + "px";
+  rectDiv.style.width = element.width + "px";
+  rectDiv.style.height = element.height + "px";
+};
+
+// Listen to input changes.
+propX.addEventListener("input", applyPropertyChanges);
+propY.addEventListener("input", applyPropertyChanges);
+propW.addEventListener("input", applyPropertyChanges);
+propH.addEventListener("input", applyPropertyChanges);

@@ -115,4 +115,9 @@ body {
   color: white;
   border: none;
   border-radius: 4px;
+  outline: none;
+}
+
+.input-error {
+  border: 2px solid rgb(194, 0, 0) !important;
 }
