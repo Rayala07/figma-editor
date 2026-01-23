@@ -49,6 +49,7 @@ const propH = document.querySelector("#propH");
 const propBg = document.querySelector("#propBg");
 const propText = document.querySelector("#propText");
 const textPropRow = document.querySelector("#textPropRow");
+const propRotate = document.querySelector("#propRotate");
 
 // Add rectangle button.
 const addRectBtn = document.querySelector("#add-rectangle");
@@ -105,16 +106,22 @@ const renderElement = (element) => {
   rectangle.style.left = element.x + "px";
   rectangle.style.top = element.y + "px";
   rectangle.style.backgroundColor = element.background;
+  rectangle.style.transform = `rotate(${element.rotation}deg)`;
 
   rectangle.dataset.id = element.id;
 
   if (element.type === "text") {
-    rectangle.innerText = element.text;
-    rectangle.style.color = "black";
-    rectangle.style.fontSize = "1rem";
-    rectangle.style.display = "flex";
-    rectangle.style.alignItems = "center";
-    rectangle.style.justifyContent = "center";
+    const textNode = document.createElement("span");
+    textNode.classList.add("text-node");
+    textNode.innerText = element.text;
+
+    rectangle.appendChild(textNode);
+
+    rectangle.style.color = element.textColor || "#000000";
+    const fontSize = element.height * 0.2;
+    rectangle.style.fontSize = fontSize + "px";
+    rectangle.style.textAlign = "center";
+    rectangle.style.lineHeight = element.height + "px";
   }
 
   canvas.appendChild(rectangle);
@@ -269,6 +276,11 @@ document.addEventListener("mousemove", (e) => {
 
     rectDiv.style.width = newWidth + "px";
     rectDiv.style.height = newHeight + "px";
+
+    if (element.type === "text") {
+      const fontSize = element.height * 0.2;
+      rectDiv.style.fontSize = fontSize + "px";
+    }
   } else if (resizeDirection === "bl") {
     const rightEdge = element.x + element.width;
 
@@ -301,6 +313,11 @@ document.addEventListener("mousemove", (e) => {
     rectDiv.style.left = newX + "px";
     rectDiv.style.width = newWidth + "px";
     rectDiv.style.height = newHeight + "px";
+
+    if (element.type === "text") {
+      const fontSize = element.height * 0.2;
+      rectDiv.style.fontSize = fontSize + "px";
+    }
   } else if (resizeDirection === "tl") {
     const rightEdge = element.x + element.width;
     const bottomEdge = element.y + element.height;
@@ -341,6 +358,11 @@ document.addEventListener("mousemove", (e) => {
     rectDiv.style.top = newY + "px";
     rectDiv.style.width = newWidth + "px";
     rectDiv.style.height = newHeight + "px";
+
+    if (element.type === "text") {
+      const fontSize = element.height * 0.2;
+      rectDiv.style.fontSize = fontSize + "px";
+    }
   } else {
     const bottomEdge = element.y + element.height;
 
@@ -373,6 +395,11 @@ document.addEventListener("mousemove", (e) => {
     rectDiv.style.top = newY + "px";
     rectDiv.style.width = newWidth + "px";
     rectDiv.style.height = newHeight + "px";
+
+    if (element.type === "text") {
+      const fontSize = element.height * 0.2;
+      rectDiv.style.fontSize = fontSize + "px";
+    }
   }
 });
 
@@ -442,6 +469,7 @@ const updatePropertiesPanel = () => {
     propBg.value = "#000";
     propText.value = "";
     textPropRow.style.display = "none";
+    propRotate.value = 0;
     return;
   }
 
@@ -452,6 +480,7 @@ const updatePropertiesPanel = () => {
   propW.value = Math.round(element.width);
   propH.value = Math.round(element.height);
   propBg.value = element.background || "#000";
+  propRotate.value = Math.round(element.rotation || 0);
 
   if (element.type === "text") {
     textPropRow.style.display = "flex";
@@ -525,13 +554,28 @@ const applyPropertyChanges = () => {
   // Text Content
   if (element.type === "text") {
     element.text = propText.value;
-    rectDiv.innerText = element.text;
+    const textNode = rectDiv.querySelector(".text-node");
+    if (textNode) {
+      textNode.innerText = element.text;
+    }
   }
 
   rectDiv.style.left = element.x + "px";
   rectDiv.style.top = element.y + "px";
   rectDiv.style.width = element.width + "px";
   rectDiv.style.height = element.height + "px";
+
+  if (element.type === "text") {
+    const fontSize = element.height * 0.2;
+    rectDiv.style.fontSize = fontSize + "px";
+  }
+
+  // Rotation
+  const rotVal = Number(propRotate.value);
+  if (!isNaN(rotVal)) {
+    element.rotation = rotVal;
+    rectDiv.style.transform = `rotate(${element.rotation}deg)`;
+  }
 };
 
 // Listen to input changes.
@@ -541,3 +585,4 @@ propW.addEventListener("input", applyPropertyChanges);
 propH.addEventListener("input", applyPropertyChanges);
 propBg.addEventListener("input", applyPropertyChanges);
 propText.addEventListener("input", applyPropertyChanges);
+propRotate.addEventListener("input", applyPropertyChanges);
