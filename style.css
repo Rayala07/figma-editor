@@ -49,11 +49,18 @@ body {
   outline: 2px solid rgb(73, 73, 241);
 }
 
-.resize-handle {
-  width: 5px;
-  height: 5px;
-  background: rgb(196, 196, 255);
+.rectangle {
   position: absolute;
+  overflow: visible;
+}
+
+.resize-handle {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background: #4c6fff;
+  z-index: 20;
+  pointer-events: auto;
 }
 
 .br {
@@ -80,8 +87,8 @@ body {
   cursor: nesw-resize;
 }
 
-#add-rectangle {
-  padding: 0.5rem;
+.tools {
+  padding: 0.5rem 1rem;
   border: none;
   font-size: 2rem;
   color: #fff;

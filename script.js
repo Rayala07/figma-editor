@@ -22,7 +22,7 @@ const renderLayers = () => {
   elements.forEach((el, idx) => {
     const layer = document.createElement("div");
     layer.classList.add("layer-item");
-    layer.innerText = `Rectangle ${idx + 1}`;
+    layer.innerText = `${el.type === "text" ? "Text" : "Rectangle"} ${idx + 1}`;
     layer.dataset.id = el.id;
 
     // Highlight selected layer.
@@ -46,31 +46,47 @@ const propX = document.querySelector("#propX");
 const propY = document.querySelector("#propY");
 const propW = document.querySelector("#propW");
 const propH = document.querySelector("#propH");
+const propBg = document.querySelector("#propBg");
+const propText = document.querySelector("#propText");
+const textPropRow = document.querySelector("#textPropRow");
 
 // Add rectangle button.
 const addRectBtn = document.querySelector("#add-rectangle");
 
 addRectBtn.addEventListener("click", () => {
-  const data = createRectangleData();
-  renderRectangle(data);
+  const rectData = createElementData("rectangle");
+  renderElement(rectData);
   renderLayers();
 });
 
-// Function to clear the canvas.
-const clearCanvas = () => {
-  canvas.innerHTML = "";
-  elements.length = 0;
-};
+// Add text button.
+const addTextBtn = document.querySelector("#add-text");
+
+addTextBtn.addEventListener("click", () => {
+  const textData = createElementData("text");
+  renderElement(textData);
+  renderLayers();
+});
+
+// // Function to clear the canvas.
+// const clearCanvas = () => {
+//   canvas.innerHTML = "";
+//   elements.length = 0;
+// };
 
 // Function to create the rectangle data.
-const createRectangleData = () => {
+const createElementData = (type) => {
   const data = {
     id: Date.now().toString(), // dynamic unq id.
-    type: "rectangle",
-    x: 20 + elements.length * 15,
-    y: 20 + elements.length * 15,
-    width: 100,
-    height: 100,
+    type: type,
+    x: 20 + elements.length * 25,
+    y: 20 + elements.length * 25,
+    width: type === "text" ? 150 : 100,
+    height: type === "text" ? 50 : 100,
+    rotation: 0,
+    background: type === "text" ? "#00000000" : "#000000",
+    text: type === "text" ? "New Text" : "",
+    zIndex: elements.length,
   };
 
   elements.push(data);
@@ -78,7 +94,7 @@ const createRectangleData = () => {
 };
 
 // Function to render the rectangle.
-const renderRectangle = (element) => {
+const renderElement = (element) => {
   const rectangle = document.createElement("div");
 
   rectangle.classList.add("rectangle");
@@ -88,9 +104,18 @@ const renderRectangle = (element) => {
   rectangle.style.height = element.height + "px";
   rectangle.style.left = element.x + "px";
   rectangle.style.top = element.y + "px";
-  rectangle.style.backgroundColor = "red";
+  rectangle.style.backgroundColor = element.background;
 
   rectangle.dataset.id = element.id;
+
+  if (element.type === "text") {
+    rectangle.innerText = element.text;
+    rectangle.style.color = "black";
+    rectangle.style.fontSize = "1rem";
+    rectangle.style.display = "flex";
+    rectangle.style.alignItems = "center";
+    rectangle.style.justifyContent = "center";
+  }
 
   canvas.appendChild(rectangle);
 
@@ -98,14 +123,6 @@ const renderRectangle = (element) => {
   rectangle.addEventListener("click", (e) => {
     e.stopPropagation();
     selectedId = element.id;
-    updateSelectedUI();
-    renderLayers();
-    updatePropertiesPanel();
-  });
-
-  // Event to deselect rectangle.
-  canvas.addEventListener("click", () => {
-    selectedId = null;
     updateSelectedUI();
     renderLayers();
     updatePropertiesPanel();
@@ -172,16 +189,24 @@ const renderRectangle = (element) => {
 
 // Function to select rectangle.
 const updateSelectedUI = () => {
-  const allRectangles = canvas.querySelectorAll("div");
+  const allElements = canvas.querySelectorAll(".rectangle");
 
-  allRectangles.forEach((rectangle) => {
-    if (rectangle.dataset.id === selectedId) {
-      rectangle.classList.add("selected");
+  allElements.forEach((element) => {
+    if (element.dataset.id === selectedId) {
+      element.classList.add("selected");
     } else {
-      rectangle.classList.remove("selected");
+      element.classList.remove("selected");
     }
   });
 };
+
+// Event to deselect rectangle.
+canvas.addEventListener("click", () => {
+  selectedId = null;
+  updateSelectedUI();
+  renderLayers();
+  updatePropertiesPanel();
+});
 
 // Event to drag rectangle.
 document.addEventListener("mousemove", (e) => {
@@ -414,6 +439,9 @@ const updatePropertiesPanel = () => {
     propY.value = "";
     propW.value = "";
     propH.value = "";
+    propBg.value = "#000";
+    propText.value = "";
+    textPropRow.style.display = "none";
     return;
   }
 
@@ -423,6 +451,15 @@ const updatePropertiesPanel = () => {
   propY.value = Math.round(element.y);
   propW.value = Math.round(element.width);
   propH.value = Math.round(element.height);
+  propBg.value = element.background || "#000";
+
+  if (element.type === "text") {
+    textPropRow.style.display = "flex";
+    propText.value = element.text;
+  } else {
+    textPropRow.style.display = "none";
+    propText.value = "";
+  }
 };
 
 // Render Changes according to input.
@@ -481,6 +518,16 @@ const applyPropertyChanges = () => {
   element.width = Math.max(MIN_SIZE, Math.min(newW, maxW));
   element.height = Math.max(MIN_SIZE, Math.min(newH, maxH));
 
+  // Background
+  element.background = propBg.value;
+  rectDiv.style.backgroundColor = element.background;
+
+  // Text Content
+  if (element.type === "text") {
+    element.text = propText.value;
+    rectDiv.innerText = element.text;
+  }
+
   rectDiv.style.left = element.x + "px";
   rectDiv.style.top = element.y + "px";
   rectDiv.style.width = element.width + "px";
@@ -492,3 +539,5 @@ propX.addEventListener("input", applyPropertyChanges);
 propY.addEventListener("input", applyPropertyChanges);
 propW.addEventListener("input", applyPropertyChanges);
 propH.addEventListener("input", applyPropertyChanges);
+propBg.addEventListener("input", applyPropertyChanges);
+propText.addEventListener("input", applyPropertyChanges);

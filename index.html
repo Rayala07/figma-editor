@@ -17,7 +17,10 @@
         <div id="layers-list"></div>
       </div>
       <div id="canvas"></div>
-      <button id="add-rectangle"><i class="ri-rectangle-line"></i></button>
+      <button id="add-rectangle" class="tools">
+        <i class="ri-rectangle-line"></i>
+      </button>
+      <button id="add-text" class="tools"><i class="ri-text"></i></button>
       <div id="properties-panel">
         <h3>Properties</h3>
         <div class="prop-row">
@@ -35,6 +38,14 @@
         <div class="prop-row">
           <label>H</label>
           <input type="text" id="propH" />
+        </div>
+        <div class="prop-row">
+          <label>BG</label>
+          <input type="color" id="propBg" />
+        </div>
+        <div class="prop-row" id="textPropRow">
+          <label>Text</label>
+          <input type="text" id="propText" />
         </div>
       </div>
     </div>
