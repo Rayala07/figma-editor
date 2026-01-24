@@ -143,12 +143,6 @@ addTextBtn.addEventListener("click", () => {
   saveToLocalStorage();
 });
 
-// // Function to clear the canvas.
-// const clearCanvas = () => {
-//   canvas.innerHTML = "";
-//   elements.length = 0;
-// };
-
 // Function to create the rectangle data.
 const createElementData = (type) => {
   const data = {
