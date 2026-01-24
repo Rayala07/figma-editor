@@ -119,6 +119,7 @@ const createElementData = (type) => {
     rotation: 0,
     background: type === "text" ? "#00000000" : "#000000",
     text: type === "text" ? "New Text" : "",
+    textColor: "#000000",
     zIndex: elements.length,
   };
 
@@ -151,10 +152,11 @@ const renderElement = (element) => {
     rectangle.appendChild(textNode);
 
     rectangle.style.color = element.textColor || "#000000";
-    const fontSize = element.height * 0.2;
+    const fontSize = Math.max(
+      12,
+      Math.min(element.height * 0.18, element.width * 0.18),
+    );
     rectangle.style.fontSize = fontSize + "px";
-    rectangle.style.textAlign = "center";
-    rectangle.style.lineHeight = element.height + "px";
   }
 
   canvas.appendChild(rectangle);
@@ -311,7 +313,10 @@ document.addEventListener("mousemove", (e) => {
     rectDiv.style.height = newHeight + "px";
 
     if (element.type === "text") {
-      const fontSize = element.height * 0.2;
+      const fontSize = Math.max(
+        12,
+        Math.min(element.height * 0.18, element.width * 0.18),
+      );
       rectDiv.style.fontSize = fontSize + "px";
     }
   } else if (resizeDirection === "bl") {
@@ -348,7 +353,10 @@ document.addEventListener("mousemove", (e) => {
     rectDiv.style.height = newHeight + "px";
 
     if (element.type === "text") {
-      const fontSize = element.height * 0.2;
+      const fontSize = Math.max(
+        12,
+        Math.min(element.height * 0.18, element.width * 0.18),
+      );
       rectDiv.style.fontSize = fontSize + "px";
     }
   } else if (resizeDirection === "tl") {
@@ -393,7 +401,10 @@ document.addEventListener("mousemove", (e) => {
     rectDiv.style.height = newHeight + "px";
 
     if (element.type === "text") {
-      const fontSize = element.height * 0.2;
+      const fontSize = Math.max(
+        12,
+        Math.min(element.height * 0.18, element.width * 0.18),
+      );
       rectDiv.style.fontSize = fontSize + "px";
     }
   } else {
@@ -430,7 +441,10 @@ document.addEventListener("mousemove", (e) => {
     rectDiv.style.height = newHeight + "px";
 
     if (element.type === "text") {
-      const fontSize = element.height * 0.2;
+      const fontSize = Math.max(
+        12,
+        Math.min(element.height * 0.18, element.width * 0.18),
+      );
       rectDiv.style.fontSize = fontSize + "px";
     }
   }
@@ -599,7 +613,10 @@ const applyPropertyChanges = () => {
   rectDiv.style.height = element.height + "px";
 
   if (element.type === "text") {
-    const fontSize = element.height * 0.2;
+    const fontSize = Math.max(
+      12,
+      Math.min(element.height * 0.18, element.width * 0.18),
+    );
     rectDiv.style.fontSize = fontSize + "px";
   }
 
