@@ -182,7 +182,7 @@ body {
 /* RECTANGLES / ELEMENTS */
 .rectangle {
   position: absolute;
-  overflow: hidden;
+  overflow: visible;
   cursor: move;
 }
 
@@ -305,6 +305,5 @@ body {
   padding: 6px;
   box-sizing: border-box;
 
-  overflow: hidden;
   pointer-events: none;
 }

@@ -1,5 +1,33 @@
 const canvas = document.querySelector("#canvas");
 
+// --- localStorage helper function ---
+const STORAGE_KEY = "figma_design_data";
+
+const saveToLocalStorage = () => {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(elements));
+};
+
+const loadFromLocalStorage = () => {
+  const data = localStorage.getItem(STORAGE_KEY);
+  if (!data) return;
+
+  const parsedData = JSON.parse(data);
+
+  // CLear old state
+  elements.length = 0;
+  canvas.innerHTML = "";
+  selectedId = null;
+
+  // Restore
+  parsedData.forEach((el) => {
+    elements.push(el);
+    renderElement(el);
+  });
+
+  renderLayers();
+  updatePropertiesPanel();
+};
+
 // Array of objects to store each element's data.
 const elements = [];
 // Var that holds the id of selected rectangle.
@@ -82,6 +110,8 @@ const propBg = document.querySelector("#propBg");
 const propText = document.querySelector("#propText");
 const textPropRow = document.querySelector("#textPropRow");
 const propRotate = document.querySelector("#propRotate");
+const propTextColor = document.querySelector("#propTextColor");
+const textColorRow = document.querySelector("#textColorRow");
 
 // Add rectangle button.
 const addRectBtn = document.querySelector("#add-rectangle");
@@ -89,7 +119,13 @@ const addRectBtn = document.querySelector("#add-rectangle");
 addRectBtn.addEventListener("click", () => {
   const rectData = createElementData("rectangle");
   renderElement(rectData);
+
+  selectedId = rectData.id;
+  updateSelectedUI();
+  updatePropertiesPanel();
   renderLayers();
+
+  saveToLocalStorage();
 });
 
 // Add text button.
@@ -98,7 +134,13 @@ const addTextBtn = document.querySelector("#add-text");
 addTextBtn.addEventListener("click", () => {
   const textData = createElementData("text");
   renderElement(textData);
+
+  selectedId = textData.id;
+  updateSelectedUI();
+  updatePropertiesPanel();
   renderLayers();
+
+  saveToLocalStorage();
 });
 
 // // Function to clear the canvas.
@@ -117,7 +159,7 @@ const createElementData = (type) => {
     width: type === "text" ? 150 : 100,
     height: type === "text" ? 50 : 100,
     rotation: 0,
-    background: type === "text" ? "#00000000" : "#000000",
+    background: type === "text" ? "transparent" : "#000000",
     text: type === "text" ? "New Text" : "",
     textColor: "#000000",
     zIndex: elements.length,
@@ -275,6 +317,9 @@ document.addEventListener("mousemove", (e) => {
 
 // Event to stop dragging rectangle.
 document.addEventListener("mouseup", () => {
+  if (isDragging || isResizing) {
+    saveToLocalStorage();
+  }
   isDragging = false;
   isResizing = false;
 });
@@ -448,6 +493,8 @@ document.addEventListener("mousemove", (e) => {
       rectDiv.style.fontSize = fontSize + "px";
     }
   }
+
+  saveToLocalStorage();
 });
 
 // Keyboard Controls
@@ -465,26 +512,32 @@ document.addEventListener("keydown", (e) => {
   // Move Left.
   if (e.key === "ArrowLeft") {
     element.x = Math.max(0, element.x - STEP);
+    saveToLocalStorage();
   }
 
   // Move Right.
   if (e.key === "ArrowRight") {
     element.x = Math.min(maxX, element.x + STEP);
+    saveToLocalStorage();
   }
 
   // Move Up
   if (e.key === "ArrowUp") {
     element.y = Math.max(0, element.y - STEP);
+    saveToLocalStorage();
   }
 
   // Move Down
   if (e.key === "ArrowDown") {
-    const maxY = canvas.clientHeight - element.height;
     element.y = Math.min(maxY, element.y + STEP);
+    saveToLocalStorage();
   }
 
   // Delete
   if (e.key === "Delete") {
+    const tag = document.activeElement.tagName;
+    if (tag === "INPUT" || tag === "TEXTAREA") return;
+
     // remove from data
     const index = elements.findIndex((el) => el.id === selectedId);
     if (index !== -1) {
@@ -492,12 +545,15 @@ document.addEventListener("keydown", (e) => {
     }
 
     // remove from UI
-    rectDiv.remove();
+    if (rectDiv) rectDiv.remove();
+
     renderLayers();
     updatePropertiesPanel();
 
     // clear selection
     selectedId = null;
+
+    saveToLocalStorage();
     return;
   }
 
@@ -513,9 +569,11 @@ const updatePropertiesPanel = () => {
     propY.value = "";
     propW.value = "";
     propH.value = "";
-    propBg.value = "#000";
+    propBg.value = "";
     propText.value = "";
+    propTextColor.value = "";
     textPropRow.style.display = "none";
+    textColorRow.style.display = "none";
     propRotate.value = 0;
     return;
   }
@@ -526,15 +584,19 @@ const updatePropertiesPanel = () => {
   propY.value = Math.round(element.y);
   propW.value = Math.round(element.width);
   propH.value = Math.round(element.height);
-  propBg.value = element.background || "#000";
+  propBg.value = element.background === "transparent" ? "" : element.background;
   propRotate.value = Math.round(element.rotation || 0);
 
   if (element.type === "text") {
     textPropRow.style.display = "flex";
-    propText.value = element.text;
+    textColorRow.style.display = "flex";
+    propText.value = element.text || "New Text";
+    propTextColor.value = element.textColor || "#000000";
   } else {
     textPropRow.style.display = "none";
+    textColorRow.style.display = "none";
     propText.value = "";
+    propTextColor.value = "";
   }
 };
 
@@ -594,10 +656,6 @@ const applyPropertyChanges = () => {
   element.width = Math.max(MIN_SIZE, Math.min(newW, maxW));
   element.height = Math.max(MIN_SIZE, Math.min(newH, maxH));
 
-  // Background
-  element.background = propBg.value;
-  rectDiv.style.backgroundColor = element.background;
-
   // Text Content
   if (element.type === "text") {
     element.text = propText.value;
@@ -605,6 +663,12 @@ const applyPropertyChanges = () => {
     if (textNode) {
       textNode.innerText = element.text;
     }
+  }
+
+  // Text Color
+  if (element.type === "text") {
+    element.textColor = propTextColor.value;
+    rectDiv.style.color = element.textColor;
   }
 
   rectDiv.style.left = element.x + "px";
@@ -626,6 +690,8 @@ const applyPropertyChanges = () => {
     element.rotation = rotVal;
     rectDiv.style.transform = `rotate(${element.rotation}deg)`;
   }
+
+  saveToLocalStorage();
 };
 
 // Listen to input changes.
@@ -633,9 +699,18 @@ propX.addEventListener("input", applyPropertyChanges);
 propY.addEventListener("input", applyPropertyChanges);
 propW.addEventListener("input", applyPropertyChanges);
 propH.addEventListener("input", applyPropertyChanges);
-propBg.addEventListener("input", applyPropertyChanges);
 propText.addEventListener("input", applyPropertyChanges);
 propRotate.addEventListener("input", applyPropertyChanges);
+propTextColor.addEventListener("input", applyPropertyChanges);
+propBg.addEventListener("input", () => {
+  if (!selectedId) return;
+
+  const element = elements.find((element) => element.id === selectedId);
+  const rectDiv = canvas.querySelector(`[data-id="${selectedId}"]`);
+
+  element.bgColor = propBg.value;
+  rectDiv.style.backgroundColor = element.bgColor;
+});
 
 // Save and Load.
 const saveBtn = document.querySelector("#save-project");
@@ -708,3 +783,8 @@ const exportCanvas = () => {
 };
 
 exportBtn.addEventListener("click", exportCanvas);
+
+// --- Auto load on refresh ---
+window.addEventListener("load", () => {
+  loadFromLocalStorage();
+});
