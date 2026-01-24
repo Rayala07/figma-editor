@@ -187,6 +187,10 @@ button:hover {
   background-size: 20px 20px;
 }
 
+#canvas:hover {
+  cursor: crosshair;
+}
+
 /* RECTANGLES / ELEMENTS */
 .rectangle {
   position: absolute;
