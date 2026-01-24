@@ -155,7 +155,7 @@ live-server
 
 ## 👨‍💻 Author
 
-**Rayala Viswanath**
+**Rayala Viswanath** | 
 Frontend Developer
 
 ---
