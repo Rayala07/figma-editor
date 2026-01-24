@@ -3,7 +3,7 @@
 A lightweight **Figma-like design editor** built using **HTML, CSS, and Vanilla JavaScript** as part of the assignment project.
 This tool allows users to visually design layouts using rectangles and text elements, similar to basic Figma functionality.
 
-🔗 **Live Demo:**  
+🔗 **Live Demo**  
 [Click here to use Edit.It](https://edit-it-oz5d.onrender.com)
 
 ---
@@ -98,22 +98,8 @@ Each element is stored as an object:
   "textColor": "#ffffff",
   "zIndex": 1
 }
+
 ```
-
----
-
-## 📁 Project Structure
-
-```bash
-project/
-│
-├── index.html
-├── style.css
-├── script.js
-├── README.md
-```
-
----
 
 ## 🛠 Tech Stack
 
@@ -150,9 +136,7 @@ live-server
 * Snap to grid
 * Font family selector
 * Text alignment
-* Border radius
 * Stroke controls
-* Shadow effects
 
 ---
 
