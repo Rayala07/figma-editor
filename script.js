@@ -538,22 +538,28 @@ document.addEventListener("keydown", (e) => {
     const tag = document.activeElement.tagName;
     if (tag === "INPUT" || tag === "TEXTAREA") return;
 
-    // remove from data
+    // Find index.
     const index = elements.findIndex((el) => el.id === selectedId);
-    if (index !== -1) {
-      elements.splice(index, 1);
-    }
 
-    // remove from UI
+    if (index === -1) return;
+
+    const removeId = elements[index].id;
+
+    // Remove data
+    elements.splice(index, 1);
+
+    // Remove UI
+    const rectDiv = canvas.querySelector(`[data-id="${removeId}"]`);
     if (rectDiv) rectDiv.remove();
+
+    // Clear selection
+    selectedId = null;
 
     renderLayers();
     updatePropertiesPanel();
 
-    // clear selection
-    selectedId = null;
+    localStorage.setItem(STORAGE_KEY, JSON.stringify([...elements]));
 
-    saveToLocalStorage();
     return;
   }
 
@@ -708,8 +714,10 @@ propBg.addEventListener("input", () => {
   const element = elements.find((element) => element.id === selectedId);
   const rectDiv = canvas.querySelector(`[data-id="${selectedId}"]`);
 
-  element.bgColor = propBg.value;
-  rectDiv.style.backgroundColor = element.bgColor;
+  element.background = propBg.value;
+  rectDiv.style.backgroundColor = element.background;
+
+  saveToLocalStorage();
 });
 
 // Save and Load.
@@ -783,6 +791,88 @@ const exportCanvas = () => {
 };
 
 exportBtn.addEventListener("click", exportCanvas);
+
+// Export as HTML.
+const exportHtmlBtn = document.querySelector("#export-html");
+
+const exportAsHtml = () => {
+  if (!elements.length) {
+    alert("Nothing to export");
+    return;
+  }
+
+  let html = "";
+
+  elements.forEach((el) => {
+    if (el.type === "rectangle") {
+      html += `
+        <div style="
+          position: absolute;
+          left: ${el.x}px;
+          top: ${el.y}px;
+          width: ${el.width}px;
+          height: ${el.height}px;
+          background-color: ${el.background};
+          transform: rotate(${el.rotation}deg);
+          z-index: ${el.zIndex};
+        "></div>
+      `;
+    }
+
+    if (el.type === "text") {
+      const fontSize = Math.max(
+        12,
+        Math.min(el.height * 0.18, el.width * 0.18),
+      );
+
+      html += `
+        <div style="
+            position:absolute;
+            left:${el.x}px;
+            top:${el.y}px;
+            width:${el.width}px;
+            height:${el.height}px;
+            background:${el.background};
+            color:${el.textColor};
+            font-size:${fontSize}px;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            transform:rotate(${el.rotation}deg);
+            z-index:${el.zIndex};
+            overflow:hidden;
+          ">
+          ${el.text}
+        </div>
+      `;
+    }
+  });
+
+  const finalHtml = `
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Exported Design</title>
+</head>
+<body style="margin:0; position:relative; width:100vw; height:100vh; background:#f5f5f5; overflow:hidden;">
+${html}
+</body>
+</html>
+  `;
+
+  const blob = new Blob([finalHtml], { type: "text/html" });
+  const url = URL.createObjectURL(blob);
+
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "design.html";
+  a.click();
+
+  URL.revokeObjectURL(url);
+};
+
+exportHtmlBtn.addEventListener("click", exportAsHtml);
 
 // --- Auto load on refresh ---
 window.addEventListener("load", () => {
