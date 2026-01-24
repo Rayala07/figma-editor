@@ -672,3 +672,22 @@ loadInput.addEventListener("change", (e) => {
 
   reader.readAsText(file);
 });
+
+// Export as PNG.
+const exportBtn = document.querySelector("#export-image");
+
+// Function to convert canvas as img.
+const exportCanvas = () => {
+  const canvasNode = document.querySelector("#canvas");
+
+  html2canvas(canvasNode).then((canvasEl) => {
+    const imageData = canvasEl.toDataURL("image/png");
+
+    const link = document.createElement("a");
+    link.href = imageData;
+    link.download = "design.png";
+    link.click();
+  });
+};
+
+exportBtn.addEventListener("click", exportCanvas);

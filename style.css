@@ -52,6 +52,7 @@ body {
 .rectangle {
   position: absolute;
   overflow: visible;
+  cursor: move;
 }
 
 .resize-handle {
