@@ -27,6 +27,7 @@ This tool allows users to visually design layouts using rectangles and text elem
 * Drag elements inside canvas
 * Resize from 4 corners
 * Keyboard movement (Arrow keys)
+* Element Duplication using `CTRL+D`
 * Delete selected elements using `Delete` key
 
 ### Layers Panel
@@ -108,21 +109,6 @@ Each element is stored as an object:
 * Vanilla JavaScript
 * Browser LocalStorage
 * html2canvas
-
----
-
-## 🚀 How to Run
-
-```bash
-# Just open index.html in browser
-```
-
-OR use Live Server:
-
-```bash
-npm install -g live-server
-live-server
-```
 
 ---
 
