@@ -16,6 +16,10 @@ body {
   overflow: hidden;
 }
 
+button:hover {
+  filter: brightness(1.1);
+}
+
 /* ROOT */
 #editor {
   width: 100%;
@@ -41,7 +45,7 @@ body {
   font-size: 18px;
 }
 
-.top-center button {
+.top-right button {
   margin: 0 6px;
   background: #3a3a3a;
   border: none;
@@ -50,10 +54,12 @@ body {
   border-radius: 6px;
   cursor: pointer;
   font-size: 12px;
+  transition: all 0.2s ease;
 }
 
-.top-center button:hover {
-  background: #4a4a4a;
+.top-right button:hover {
+  box-shadow: 0 0 12px rgba(89, 89, 89, 0.116);
+  transform: translateY(-2px);
 }
 
 /* MAIN GRID */
@@ -89,15 +95,15 @@ body {
   border-radius: 8px;
   cursor: pointer;
   transition: 0.2s;
+  margin-right: 5px;
 }
 
 .tools:hover {
-  background: #3a3a3a;
-  border-color: #555;
+  box-shadow: 0 0 12px rgba(82, 82, 82, 0.35);
 }
 
 .tools.active {
-  background: #00aaff;
+  background: #979a9c;
   color: black;
 }
 
@@ -122,10 +128,12 @@ body {
   cursor: pointer;
   border-radius: 6px;
   font-size: 12px;
+  transition: all 0.3s ease;
 }
 
 .layer-item:hover {
   background: #3f3f3f;
+  transform: scale(1.02);
 }
 
 .layer-item.active {
@@ -283,6 +291,13 @@ body {
   outline: 1px solid #00aaff;
 }
 
+/* Remove default number input arrows */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
 /* INPUT ERROR */
 .input-error {
   border: 2px solid #c20000 !important;
@@ -306,4 +321,73 @@ body {
   box-sizing: border-box;
 
   pointer-events: none;
+}
+
+/* TIPS PANEL */
+#tips-panel {
+  margin-top: 100px;
+  padding: 12px 14px;
+  background: #181818; /* blended dark */
+  border: 1px solid #2b2b2b;
+  border-radius: 10px;
+}
+
+/* Title */
+#tips-panel h3 {
+  font-size: 13px;
+  margin-bottom: 10px;
+  color: #bdbdbd; /* neutral professional */
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+/* List */
+#tips-panel ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+/* Items */
+#tips-panel li {
+  font-size: 13px;
+  color: #d0d0d0;
+  padding: 6px 4px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-radius: 6px;
+  transition: all 0.15s ease;
+  line-height: 1.5;
+}
+
+/* Bullet */
+#tips-panel li::before {
+  content: "•";
+  color: #7a7a7a;
+  font-size: 14px;
+}
+
+/* Hover */
+#tips-panel li:hover {
+  background: #202020;
+  color: #ffffff;
+}
+
+/* Key highlight */
+#tips-panel b {
+  color: #ffffff;
+  font-weight: 600;
+}
+
+/* Keyboard combo style (for CTRL + D) */
+#tips-panel kbd {
+  background: #2a2a2a;
+  border: 1px solid #3a3a3a;
+  border-radius: 4px;
+  padding: 2px 6px;
+  font-size: 11px;
+  font-family: monospace;
+  color: #ffffff;
 }

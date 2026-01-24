@@ -868,6 +868,32 @@ ${html}
 
 exportHtmlBtn.addEventListener("click", exportAsHtml);
 
+// Duplicate Selected Element
+document.addEventListener("keydown", (e) => {
+  if (e.ctrlKey && e.key.toLowerCase() === "d" && selectedId) {
+    e.preventDefault();
+
+    const element = elements.find((el) => el.id === selectedId);
+    if (!element) return;
+
+    const copy = {
+      ...JSON.parse(JSON.stringify(element)),
+      id: Date.now().toString(),
+      x: element.x + 20,
+      y: element.y + 20,
+      zIndex: elements.length,
+    };
+
+    elements.push(copy);
+    renderElement(copy);
+    selectedId = copy.id;
+    renderLayers();
+    updateSelectedUI();
+    updatePropertiesPanel();
+    saveToLocalStorage();
+  }
+});
+
 // --- Auto load on refresh ---
 window.addEventListener("load", () => {
   loadFromLocalStorage();

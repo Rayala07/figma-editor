@@ -17,10 +17,10 @@
       <!-- TOP BAR -->
       <div id="topbar">
         <div class="top-left">
-          <span class="logo"><i class="ri-figma-line"></i>Edit.It</span>
+          <span class="logo">Edit.It</span>
         </div>
 
-        <div class="top-center">
+        <div class="top-right">
           <button id="save-project">Save</button>
           <button id="load-project">Load</button>
           <input type="file" id="load-input" accept=".json" hidden />
@@ -50,8 +50,8 @@
             <div id="layers-list"></div>
 
             <div id="layer-controls">
-              <button id="bring-front">⬆</button>
-              <button id="send-back">⬇</button>
+              <button id="bring-front">⬆ Front</button>
+              <button id="send-back">⬇ Back</button>
             </div>
           </div>
         </div>
@@ -105,6 +105,17 @@
               <label>Text</label>
               <input type="text" id="propText" />
             </div>
+          </div>
+          <div id="tips-panel">
+            <h3>Tips for you</h3>
+            <ul>
+              <li>Click element to select</li>
+              <li>Drag Corners to resize</li>
+              <li>Use arrow keys to move</li>
+              <li>Press <kbd>Delete</kbd> to remove element</li>
+              <li>Press <kbd>CTRL</kbd> + <kbd>D</kbd> to duplicate element</li>
+              <li>Use Layers Panel to reorder</li>
+            </ul>
           </div>
         </div>
       </div>
