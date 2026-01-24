@@ -9,12 +9,17 @@
       href="https://cdn.jsdelivr.net/npm/remixicon@4.8.0/fonts/remixicon.css"
       rel="stylesheet"
     />
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
   </head>
   <body>
     <div id="app">
       <div id="layers-panel">
         <h3>Layers</h3>
         <div id="layers-list"></div>
+        <div id="layer-controls">
+          <button id="bring-front">⬆ Front</button>
+          <button id="send-back">⬇ Back</button>
+        </div>
       </div>
       <div id="canvas"></div>
       <button id="add-rectangle" class="tools">
@@ -51,6 +56,12 @@
           <label>Text</label>
           <input type="text" id="propText" />
         </div>
+      </div>
+      <div id="project-controls">
+        <button id="save-project">Save</button>
+        <button id="load-project">Load</button>
+        <input type="file" id="load-input" accept=".json" hidden />
+        <button id="export-image">Export PNG</button>
       </div>
     </div>
     <script src="script.js"></script>

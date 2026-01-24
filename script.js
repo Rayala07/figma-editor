@@ -16,6 +16,38 @@ let resizeDirection = "";
 
 // Layers panel.
 const layersList = document.querySelector("#layers-list");
+const bringFrontBtn = document.querySelector("#bring-front");
+const sendBackBtn = document.querySelector("#send-back");
+
+// Bring front button.
+bringFrontBtn.addEventListener("click", () => {
+  if (!selectedId) return;
+
+  const element = elements.find((el) => el.id === selectedId);
+  const maxZ = Math.max(...elements.map((el) => el.zIndex));
+
+  element.zIndex = maxZ + 1;
+
+  const rectDiv = canvas.querySelector(`[data-id="${selectedId}"]`);
+  rectDiv.style.zIndex = element.zIndex;
+
+  renderLayers();
+});
+
+// Send back button.
+sendBackBtn.addEventListener("click", () => {
+  if (!selectedId) return;
+
+  const element = elements.find((el) => el.id === selectedId);
+  const minZ = Math.min(...elements.map((el) => el.zIndex));
+
+  element.zIndex = minZ - 1;
+
+  const rectDiv = canvas.querySelector(`[data-id="${selectedId}"]`);
+  rectDiv.style.zIndex = element.zIndex;
+
+  renderLayers();
+});
 
 const renderLayers = () => {
   layersList.innerHTML = "";
@@ -107,6 +139,7 @@ const renderElement = (element) => {
   rectangle.style.top = element.y + "px";
   rectangle.style.backgroundColor = element.background;
   rectangle.style.transform = `rotate(${element.rotation}deg)`;
+  rectangle.style.zIndex = element.zIndex;
 
   rectangle.dataset.id = element.id;
 
@@ -586,3 +619,56 @@ propH.addEventListener("input", applyPropertyChanges);
 propBg.addEventListener("input", applyPropertyChanges);
 propText.addEventListener("input", applyPropertyChanges);
 propRotate.addEventListener("input", applyPropertyChanges);
+
+// Save and Load.
+const saveBtn = document.querySelector("#save-project");
+const loadBtn = document.querySelector("#load-project");
+const loadInput = document.querySelector("#load-input");
+
+// Save logic.
+saveBtn.addEventListener("click", () => {
+  const data = JSON.stringify(elements, null, 2);
+
+  const blob = new Blob([data], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "project.json";
+  a.click();
+
+  URL.revokeObjectURL(url);
+});
+
+// Load listener.
+loadBtn.addEventListener("click", () => {
+  loadInput.click();
+});
+
+// Load logic.
+loadInput.addEventListener("change", (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+
+  reader.onload = (event) => {
+    const data = JSON.parse(event.target.result);
+
+    // Clear old state
+    elements.length = 0;
+    canvas.innerHTML = "";
+    selectedId = null;
+
+    // Load new state
+    data.forEach((el) => {
+      elements.push(el);
+      renderElement(el);
+    });
+
+    renderLayers();
+    updatePropertiesPanel();
+  };
+
+  reader.readAsText(file);
+});
